@@ -598,9 +598,7 @@ class TestExceptionHandler:
         self, mock_logger, request_configs, mock_httpx_client
     ) -> None:
         """When both a base and a specific handler are registered, the specific one wins."""
-        mock_httpx_client.request = AsyncMock(
-            side_effect=httpx.ConnectError("boom")
-        )
+        mock_httpx_client.request = AsyncMock(side_effect=httpx.ConnectError("boom"))
 
         event_hooks = EventHooks()
 
@@ -674,9 +672,7 @@ class TestOAuth2ClientCredentials:
         return response
 
     @pytest.mark.asyncio
-    async def test_access_token_is_cached_between_requests(
-        self, mock_logger
-    ) -> None:
+    async def test_access_token_is_cached_between_requests(self, mock_logger) -> None:
         """The token endpoint is queried once and the token is reused."""
         token_requests: list[httpx.Request] = []
         api_requests: list[httpx.Request] = []
@@ -695,14 +691,13 @@ class TestOAuth2ClientCredentials:
         # endpoint, so it has to be routed to the mock transport as well.
         original_client = httpx.Client
 
-        def client_factory(*args, **kwargs):
-            kwargs["transport"] = httpx.MockTransport(token_handler)
-            return original_client(*args, **kwargs)
+        def client_factory() -> httpx.Client:
+            return original_client(transport=httpx.MockTransport(token_handler))
 
         auth = OAuth2ClientCredentials(
-            token_url="https://auth.example.com/oauth/token",
+            token_url="https://auth.example.com/oauth/token",  # noqa: S106
             client_id="client-id",
-            client_secret="client-secret",
+            client_secret="client-secret",  # noqa: S106
         )
 
         client = HTTPClient(
@@ -753,14 +748,13 @@ class TestOAuth2ClientCredentials:
 
         original_client = httpx.Client
 
-        def client_factory(*args, **kwargs):
-            kwargs["transport"] = httpx.MockTransport(token_handler)
-            return original_client(*args, **kwargs)
+        def client_factory() -> httpx.Client:
+            return original_client(transport=httpx.MockTransport(token_handler))
 
         auth = OAuth2ClientCredentials(
-            token_url="https://auth.example.com/oauth/token",
+            token_url="https://auth.example.com/oauth/token",  # noqa: S106
             client_id="client-id",
-            client_secret="client-secret",
+            client_secret="client-secret",  # noqa: S106
         )
 
         client = HTTPClient(
